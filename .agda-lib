@@ -1,0 +1,8 @@
+name: hoare-proof-outlines
+include:
+  examples
+  lib/agda-stdlib/src
+  lib/ternary.agda/src
+  src
+flags: --warning=error --safe --without-K
+

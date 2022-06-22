@@ -1,0 +1,6 @@
+[submodule "agda-stdlib"]
+    path = lib/agda-stdlib
+    url = git@github.com:agda/agda-stdlib.git
+[submodule "ternary.agda"]
+    path = lib/ternary.agda
+    url = git@github.com:ajrouvoet/ternary.agda.git

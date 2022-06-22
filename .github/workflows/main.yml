@@ -1,0 +1,116 @@
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  AGDA_VERSION: v2.6.2
+  GHC_VERSION: 9.0.1
+  CABAL_VERSION: 3.6.0.0
+  FIX_WHITESPACE_VERSION: 0.0.7
+
+  CABAL_INSTALL: cabal install --overwrite-policy=always --ghc-options='-O1 +RTS -M6G -RTS'
+  AGDA: agda +RTS -M6G -H3.5G -A128M -RTS -i. -iexamples
+
+jobs:
+
+  # Type checks the repo and dependencies
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      # The script won't be able to find Agda if we don't tell it to look at the
+      # content of ~/.cabal/bin
+      - name: Put cabal programs in PATH
+        run: echo "~/.cabal/bin" >> $GITHUB_PATH
+
+      # Caches the Cabal build, since installing Agda takes a long time
+      - name: Cache cabal packages
+        uses: actions/cache@v2
+        id: cache-cabal
+        with:
+          path: |
+            ~/.cabal/packages
+            ~/.cabal/store
+            ~/.cabal/bin
+          key: ${{ runner.os }}-${{ env.GHC_VERSION }}-${{ env.CABAL_VERSION }}-${{ env.AGDA_VERSION }}
+
+      - name: Install ghc and cabal
+        if: steps.cache-cabal.outputs.cache-hit != 'true'
+        uses: haskell/actions/setup@v1
+        with:
+          ghc-version: ${{ env.GHC_VERSION }}
+          cabal-version: ${{ env.CABAL_VERSION }}
+
+      - name: Cabal update
+        if: steps.cache-cabal.outputs.cache-hit != 'true'
+        run: cabal update
+
+      - name: Download Agda from github
+        if: steps.cache-cabal.outputs.cache-hit != 'true'
+        uses: actions/checkout@v2
+        with:
+          repository: agda/agda
+          path: agda
+          ref: ${{ env.AGDA_VERSION }}
+
+      - name: Install Agda
+        if: steps.cache-cabal.outputs.cache-hit != 'true'
+        run: |
+          cd agda
+          mkdir -p doc
+          touch doc/user-manual.pdf
+          ${{ env.CABAL_INSTALL }}
+          cd ..
+
+      - name: Checkout main
+        uses: actions/checkout@v2
+        with:
+          path: hoare-proof-outlines
+          submodules: true
+
+      - name: Check hoare-proof-outlines
+        run: |
+          cd "$GITHUB_WORKSPACE/hoare-proof-outlines"
+          ${{ env.AGDA }} Everything.agda
+
+
+  whitespace:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Cache fix-whitespace binary
+        uses: actions/cache@v2
+        id: cache
+        with:
+          path: ~/.local/bin
+          key: ${{ runner.os }}-fix-whitespace-${{ env.FIX_WHITESPACE_VERSION }}
+
+      - name: Create directory for binary
+        run: |
+          mkdir -p $HOME/.local/bin
+
+      - name: Cabal update
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: cabal update
+
+      - name: Install fix-whitespace
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          cabal install --install-method=copy --installdir=$HOME/.local/bin fix-whitespace
+          strip $HOME/.local/bin/fix-whitespace
+
+      - name: Checkout main
+        uses: actions/checkout@v2
+
+      - name: Check whitespace
+        run: |
+          $HOME/.local/bin/fix-whitespace --check
+
