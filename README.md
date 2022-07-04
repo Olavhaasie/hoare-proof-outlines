@@ -10,10 +10,12 @@ The mechanization aims to make the outlines more readable by using macros in Agd
 
 ## Structure
 
-The thesis can be found at _INSERT REF HERE_.
+The thesis can be found at the [TU Delft repository][tu-delft-repo].
 The main source is in [`src/`](src/).
 See [`Everything.agda`](Everything.agda) for a complete overview and description of all modules in the library.
 Examples of how to use the library are contained in [`examples/`](examples/).
+
+[tu-delft-repo]: https://repository.tudelft.nl/islandora/object/uuid:5ca6e6f3-1242-4b86-8307-4ac4f4489951?collection=education
 
 
 ## How to check

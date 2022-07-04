@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: "Haas"
+    name-particle: "de"
+    given-names: "Olav Niels"
+title: "Hoare Proof Outlines in Agda"
+date-released: 2022-07-11
+repository-code: "https://github.com/Olavhaasie/hoare-proof-outlines"
+preferred-citation:
+  type: thesis
+  scope: "Cite this thesis if you want to reference the general mechanization or idea."
+  thesis-type: "Master Thesis"
+  authors:
+    - family-names: "Haas"
+      name-particle: "de"
+      given-names: "Olav Niels"
+  title: "Mechanizing Hoare Style Proof Outlines for Imperative Programs in Agda"
+  year: 2022
+  month: 7
+  institution:
+    name: "Delft University of Technology"
+    country: NL
+  url: "https://repository.tudelft.nl/islandora/object/uuid:5ca6e6f3-1242-4b86-8307-4ac4f4489951?collection=education"
+
